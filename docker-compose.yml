@@ -1,0 +1,6 @@
+services:
+  mu.api:
+    image: ${DOCKER_REGISTRY-}muapi
+    build:
+      context: .
+      dockerfile: MU.APi/Dockerfile
