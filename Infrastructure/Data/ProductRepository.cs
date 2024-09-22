@@ -1,5 +1,4 @@
-﻿
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,6 @@ public class ProductRepository(StoreContext context) : IProductRepository
             "priceDesc" => products.OrderByDescending(x => x.Price),
             _ => products.OrderBy(x => x.Name)
         };
-
 
         return await products.ToListAsync();
     }
