@@ -1,5 +1,7 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace MU.APi.Controllers;
@@ -10,9 +12,10 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
 {
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts()
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand , string? type , string? sort)
     {
-        var products = await repo.GetAllAsync();
+        var spec = new ProductSpecification(brand, type , sort);
+        var products = await repo.ListAsync(spec);
         return Ok(products);
     }
 
@@ -65,16 +68,20 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
         return BadRequest("The is a problem with DB");
     }
 
-    //[HttpGet("brands")]
-    //public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
-    //{
-    //    return Ok(await repo.GetBrandsAsync());
-    //}
+    [HttpGet("brands")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetBrands()
+    {
+        var spec = new BrandListSpecification();
+        var brands = await repo.ListAsync<string>(spec);
+        return Ok(brands);
+    }
 
-    //[HttpGet("types")]
-    //public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
-    //{
-    //    return Ok(await repo.GetTypesAsync());
-    //}
+    [HttpGet("types")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetTypes()
+    {
+        var spec = new TypeListSpecification();
+        var types = await repo.ListAsync<string>(spec);
+        return Ok(types);
+    }
 }
 
