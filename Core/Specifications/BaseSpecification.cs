@@ -28,6 +28,26 @@ public class BaseSpecification<T>(Expression<Func<T, bool>> criteria) : ISpecifi
     {
         IsDistinct = true;
     }
+
+    public int Take { get; private set; }
+    public int Skip { get; private set; }
+    public bool IsPagingEnabled { get; private set; }
+
+    protected void ApplyPaging(int take , int skip)
+    {
+        Skip = skip;
+        Take = take;
+        IsPagingEnabled = true;
+    }
+
+    public IQueryable<T> ApplyCriteria(IQueryable<T> query)
+    {
+        if(Criteria != null)
+        {
+            query = query.Where(Criteria);
+        }
+        return query;
+    }
 }
 
 public class BaseSpecification<T, TResult>(Expression<Func<T, bool>> criteria)

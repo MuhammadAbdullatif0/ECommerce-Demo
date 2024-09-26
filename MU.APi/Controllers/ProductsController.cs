@@ -1,8 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
-
 using Microsoft.AspNetCore.Mvc;
+
+using MU.APi.RequestHelper;
 
 namespace MU.APi.Controllers;
 
@@ -12,11 +13,13 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
 {
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(string? brand , string? type , string? sort)
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
     {
-        var spec = new ProductSpecification(brand, type , sort);
+        var spec = new ProductSpecification(specParams);
         var products = await repo.ListAsync(spec);
-        return Ok(products);
+        var count = await repo.CountAsync(spec);
+        var paging = new Pagination<Product>(specParams.PageIndex, specParams.PageSize , count , products);
+        return Ok(paging);
     }
 
     [HttpGet("{id:int}")]
