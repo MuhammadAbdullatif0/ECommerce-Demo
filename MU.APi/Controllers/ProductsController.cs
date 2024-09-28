@@ -26,7 +26,7 @@ public class ProductsController(IGenericRepository<Product> repo) : ControllerBa
     public async Task<ActionResult<Product>> GetProduct(int id)
     {
         if (id <= 0) return BadRequest("Invalid ID");
-        var product = await repo.GetByIdAsync(id);
+        var product = await repo.GetByIdAsync(id); 
         if (product is null) return NotFound("Not Found Product");
         return Ok(product);
     }
