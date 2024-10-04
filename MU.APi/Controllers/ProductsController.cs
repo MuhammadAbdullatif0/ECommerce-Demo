@@ -6,15 +6,19 @@ using MU.APi.RequestHelper;
 
 namespace MU.APi.Controllers;
 
+
 public class ProductsController(IGenericRepository<Product> repo) : BaseApiController
 {
 
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProducts(
+        [FromQuery] ProductSpecParams specParams)
     {
         var spec = new ProductSpecification(specParams);
-
-        return await CreatePagedResult(repo, spec, specParams.PageIndex, specParams.PageSize);
+        var products = await repo.ListAsync(spec);
+        var count = await repo.CountAsync(spec);
+        var paging = new Pagination<Product>(specParams.PageIndex, specParams.PageSize , count , products);
+        return Ok(paging);
     }
 
     [HttpGet("{id:int}")]
